@@ -16,6 +16,7 @@ import { AdminLayout } from './pages/Admin/AdminLayout';
 import { Dashboard } from './pages/Admin/Dashboard';
 import { ManageProjects } from './pages/Admin/ManageProjects';
 import { ManageTestimonials } from './pages/Admin/ManageTestimonials';
+import { ManageLeads } from './pages/Admin/ManageLeads';
 import { Settings } from './pages/Admin/Settings';
 
 export default function App() {
@@ -39,6 +40,7 @@ export default function App() {
               <Route index element={<Dashboard />} />
               <Route path="projects" element={<ManageProjects />} />
               <Route path="testimonials" element={<ManageTestimonials />} />
+              <Route path="leads" element={<ManageLeads />} />
               <Route path="settings" element={<Settings />} />
             </Route>
           </Route>

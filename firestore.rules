@@ -49,6 +49,15 @@ service cloud.firestore {
     //   - message: string (required)
     //   - createdAt: timestamp (required)
     //
+    // Collection: leads
+    // Document ID: auto-generated
+    // Fields:
+    //   - name: string (required)
+    //   - whatsapp: string (required)
+    //   - service: string (required)
+    //   - description: string (required)
+    //   - createdAt: timestamp (required)
+    //
     // ===============================================================
     
     // ===============================================================
@@ -156,6 +165,16 @@ service cloud.firestore {
              data.createdAt is timestamp;
     }
     
+    function isValidLead(data) {
+      return hasOnlyAllowedFields(['name', 'whatsapp', 'service', 'description', 'createdAt']) &&
+             hasRequiredFields(['name', 'whatsapp', 'service', 'description', 'createdAt']) &&
+             isValidRequiredString('name', 100) &&
+             isValidRequiredString('whatsapp', 50) &&
+             isValidRequiredString('service', 100) &&
+             isValidRequiredString('description', 5000) &&
+             data.createdAt is timestamp;
+    }
+    
     // ===============================================================
     // Rules
     // ===============================================================
@@ -196,6 +215,13 @@ service cloud.firestore {
       allow read: if isAdmin();
       allow create: if isValidMessage(request.resource.data);
       allow update: if isAdmin() && isValidMessage(request.resource.data);
+      allow delete: if isAdmin();
+    }
+    
+    match /leads/{leadId} {
+      allow read: if isAdmin();
+      allow create: if isValidLead(request.resource.data);
+      allow update: if isAdmin() && isValidLead(request.resource.data);
       allow delete: if isAdmin();
     }
   }

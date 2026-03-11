@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navbar } from './Navbar';
 import { Outlet } from 'react-router-dom';
+import { LeadCapture } from './LeadCapture';
 
 export const Layout = () => {
   return (
@@ -12,6 +13,7 @@ export const Layout = () => {
       <footer className="bg-zinc-950 border-t border-white/10 py-8 text-center text-zinc-500 text-sm">
         <p>© {new Date().getFullYear()} Design Portfolio. Todos os direitos reservados.</p>
       </footer>
+      <LeadCapture />
     </div>
   );
 };

@@ -77,6 +77,19 @@
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["name", "email", "message", "createdAt"]
+    },
+    "Lead": {
+      "title": "Lead",
+      "description": "A captured lead from the popup form",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "whatsapp": { "type": "string" },
+        "service": { "type": "string" },
+        "description": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "whatsapp", "service", "description", "createdAt"]
     }
   },
   "firestore": {
@@ -103,6 +116,10 @@
     "/messages/{messageId}": {
       "schema": { "$ref": "#/entities/Message" },
       "description": "Contact form messages"
+    },
+    "/leads/{leadId}": {
+      "schema": { "$ref": "#/entities/Lead" },
+      "description": "Captured leads"
     }
   }
 }
