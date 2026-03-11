@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Mail, MessageCircle, PenTool, MonitorSmartphone, FileText, Share2, Utensils, Plus } from 'lucide-react';
 import { doc, getDoc } from 'firebase/firestore';
@@ -8,6 +8,7 @@ import { db } from '../firebase';
 export const Home = () => {
   const [settings, setSettings] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -25,6 +26,20 @@ export const Home = () => {
     fetchSettings();
   }, []);
 
+  const defaultImage = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop';
+  const heroImages = settings?.heroImages?.length > 0 
+    ? settings.heroImages 
+    : (settings?.heroImage ? [settings.heroImage] : [defaultImage]);
+
+  useEffect(() => {
+    if (heroImages.length > 1) {
+      const interval = setInterval(() => {
+        setCurrentImageIndex((prev) => (prev + 1) % heroImages.length);
+      }, 5000); // Change image every 5 seconds
+      return () => clearInterval(interval);
+    }
+  }, [heroImages.length]);
+
   if (loading) {
     return (
       <div className="min-h-[80vh] flex items-center justify-center">
@@ -37,7 +52,6 @@ export const Home = () => {
   const role = settings?.role || 'Designer Independente';
   const heroText = settings?.heroText || 'Transformando ideias em experiências digitais inesquecíveis.';
   const description = settings?.description || 'Especialista em criar interfaces modernas, intuitivas e focadas na conversão para marcas que desejam se destacar no mercado digital.';
-  const heroImage = settings?.heroImage || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop';
 
   const services = [
     { icon: PenTool, title: 'IDENTIDADE DE MARCA & LOGOS' },
@@ -120,16 +134,37 @@ export const Home = () => {
         >
           <div className="aspect-[4/5] md:aspect-square rounded-[2rem] overflow-hidden relative group">
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10"></div>
-            <img 
-              src={heroImage} 
-              alt={name} 
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-              referrerPolicy="no-referrer"
-            />
+            
+            <AnimatePresence mode="wait">
+              <motion.img 
+                key={currentImageIndex}
+                initial={{ opacity: 0, scale: 1.05 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.8 }}
+                src={heroImages[currentImageIndex]} 
+                alt={name} 
+                className="absolute inset-0 w-full h-full object-cover"
+                referrerPolicy="no-referrer"
+              />
+            </AnimatePresence>
+
             <div className="absolute bottom-8 left-8 z-20">
               <p className="text-2xl font-bold text-white">{name}</p>
               <p className="text-emerald-400 font-medium">{role}</p>
             </div>
+
+            {/* Carousel Indicators */}
+            {heroImages.length > 1 && (
+              <div className="absolute bottom-8 right-8 z-20 flex gap-2">
+                {heroImages.map((_, idx) => (
+                  <div 
+                    key={idx} 
+                    className={`h-1.5 rounded-full transition-all duration-300 ${idx === currentImageIndex ? 'w-6 bg-emerald-500' : 'w-2 bg-white/30'}`}
+                  />
+                ))}
+              </div>
+            )}
           </div>
           
           {/* Decorative elements */}

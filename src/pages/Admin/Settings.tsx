@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { toast } from 'sonner';
-import { Save } from 'lucide-react';
+import { Save, Plus, Trash2 } from 'lucide-react';
 
 export const Settings = () => {
   const [loading, setLoading] = useState(false);
@@ -12,6 +12,7 @@ export const Settings = () => {
     description: '',
     heroText: '',
     heroImage: '',
+    heroImages: [] as string[],
     aboutText: '',
     experience: '',
     specialties: '',
@@ -40,6 +41,28 @@ export const Settings = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleAddHeroImage = () => {
+    if (formData.heroImages.length < 10) {
+      setFormData(prev => ({
+        ...prev,
+        heroImages: [...prev.heroImages, '']
+      }));
+    } else {
+      toast.error('O limite máximo é de 10 imagens.');
+    }
+  };
+
+  const handleHeroImageChange = (index: number, value: string) => {
+    const newImages = [...formData.heroImages];
+    newImages[index] = value;
+    setFormData(prev => ({ ...prev, heroImages: newImages }));
+  };
+
+  const handleRemoveHeroImage = (index: number) => {
+    const newImages = formData.heroImages.filter((_, i) => i !== index);
+    setFormData(prev => ({ ...prev, heroImages: newImages }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -103,9 +126,44 @@ export const Settings = () => {
             <label className="block text-sm font-medium text-zinc-400 mb-1">Breve Descrição</label>
             <textarea name="description" value={formData.description} onChange={handleChange} rows={3} className="w-full bg-zinc-950 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-emerald-500 outline-none" />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-zinc-400 mb-1">URL da Foto Principal (Hero)</label>
-            <input type="url" name="heroImage" value={formData.heroImage} onChange={handleChange} className="w-full bg-zinc-950 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-emerald-500 outline-none" />
+          
+          <div className="pt-4 border-t border-white/5">
+            <div className="flex items-center justify-between mb-4">
+              <label className="block text-sm font-medium text-zinc-400">Imagens do Carrossel (Máx 10)</label>
+              <button
+                type="button"
+                onClick={handleAddHeroImage}
+                disabled={formData.heroImages.length >= 10}
+                className="flex items-center gap-2 text-sm bg-zinc-800 hover:bg-zinc-700 text-white px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50"
+              >
+                <Plus className="w-4 h-4" />
+                Adicionar Imagem
+              </button>
+            </div>
+            
+            <div className="space-y-3">
+              {formData.heroImages.length === 0 && (
+                <p className="text-sm text-zinc-500 italic">Nenhuma imagem adicionada. A imagem padrão será exibida.</p>
+              )}
+              {formData.heroImages.map((url, index) => (
+                <div key={index} className="flex gap-2">
+                  <input 
+                    type="url" 
+                    value={url} 
+                    onChange={(e) => handleHeroImageChange(index, e.target.value)} 
+                    placeholder="URL da imagem..."
+                    className="flex-1 bg-zinc-950 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-emerald-500 outline-none" 
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveHeroImage(index)}
+                    className="p-2 bg-red-500/10 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 

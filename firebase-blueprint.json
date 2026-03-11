@@ -21,6 +21,11 @@
         "description": { "type": "string" },
         "heroText": { "type": "string" },
         "heroImage": { "type": "string" },
+        "heroImages": {
+          "type": "array",
+          "items": { "type": "string" },
+          "maxItems": 10
+        },
         "aboutText": { "type": "string" },
         "experience": { "type": "string" },
         "specialties": { "type": "string" },

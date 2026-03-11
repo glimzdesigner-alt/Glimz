@@ -17,6 +17,7 @@ service cloud.firestore {
     // Document ID: 'global'
     // Fields:
     //   - name, role, description, heroText, heroImage, aboutText, experience, specialties, tools, whatsapp, email, instagram, logoUrl: string (optional)
+    //   - heroImages: list of strings (optional, max 10)
     //
     // Collection: projects
     // Document ID: auto-generated
@@ -101,6 +102,12 @@ service cloud.firestore {
       return request.resource.data[field] is string && request.resource.data[field].size() > 0 && request.resource.data[field].size() <= maxLen;
     }
     
+    function isValidStringList(field, maxListSize, maxStringLen) {
+      return !('field' in request.resource.data) || 
+             (request.resource.data[field] is list && 
+              request.resource.data[field].size() <= maxListSize);
+    }
+    
     // ===============================================================
     // Domain Validators
     // ===============================================================
@@ -114,12 +121,13 @@ service cloud.firestore {
     }
     
     function isValidSettings(data) {
-      return hasOnlyAllowedFields(['name', 'role', 'description', 'heroText', 'heroImage', 'aboutText', 'experience', 'specialties', 'tools', 'whatsapp', 'email', 'instagram', 'logoUrl']) &&
+      return hasOnlyAllowedFields(['name', 'role', 'description', 'heroText', 'heroImage', 'heroImages', 'aboutText', 'experience', 'specialties', 'tools', 'whatsapp', 'email', 'instagram', 'logoUrl']) &&
              (!('name' in data) || isValidString('name', 100)) &&
              (!('role' in data) || isValidString('role', 100)) &&
              (!('description' in data) || isValidString('description', 500)) &&
              (!('heroText' in data) || isValidString('heroText', 500)) &&
              (!('heroImage' in data) || isValidString('heroImage', 2000)) &&
+             (!('heroImages' in data) || (data.heroImages is list && data.heroImages.size() <= 10)) &&
              (!('aboutText' in data) || isValidString('aboutText', 5000)) &&
              (!('experience' in data) || isValidString('experience', 2000)) &&
              (!('specialties' in data) || isValidString('specialties', 2000)) &&
