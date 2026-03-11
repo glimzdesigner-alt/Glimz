@@ -1,0 +1,202 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: users
+    // Document ID: userId (auth.uid)
+    // Fields:
+    //   - email: string (required)
+    //   - role: string (required, enum: ['admin', 'user'])
+    //   - createdAt: timestamp (optional)
+    //
+    // Collection: settings
+    // Document ID: 'global'
+    // Fields:
+    //   - name, role, description, heroText, heroImage, aboutText, experience, specialties, tools, whatsapp, email, instagram, logoUrl: string (optional)
+    //
+    // Collection: projects
+    // Document ID: auto-generated
+    // Fields:
+    //   - title: string (required)
+    //   - category: string (required)
+    //   - description: string (optional)
+    //   - imageUrl: string (required)
+    //   - createdAt: timestamp (required)
+    //
+    // Collection: categories
+    // Document ID: auto-generated
+    // Fields:
+    //   - name: string (required)
+    //
+    // Collection: testimonials
+    // Document ID: auto-generated
+    // Fields:
+    //   - clientName: string (required)
+    //   - clientPhoto: string (optional)
+    //   - rating: number (required)
+    //   - comment: string (required)
+    //   - createdAt: timestamp (required)
+    //
+    // Collection: messages
+    // Document ID: auto-generated
+    // Fields:
+    //   - name: string (required)
+    //   - email: string (required)
+    //   - message: string (required)
+    //   - createdAt: timestamp (required)
+    //
+    // ===============================================================
+    
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() &&
+        (
+          (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+           get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin') ||
+          (request.auth.token.email == "pernambucoresenhoso@gmail.com" && request.auth.token.email_verified == true)
+        );
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+    
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+    
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+    
+    function isValidString(field, maxLen) {
+      return !('field' in request.resource.data) || (request.resource.data[field] is string && request.resource.data[field].size() <= maxLen);
+    }
+    
+    function isValidRequiredString(field, maxLen) {
+      return request.resource.data[field] is string && request.resource.data[field].size() > 0 && request.resource.data[field].size() <= maxLen;
+    }
+    
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+    
+    function isValidUser(data) {
+      return hasOnlyAllowedFields(['email', 'role', 'createdAt']) &&
+             hasRequiredFields(['email', 'role']) &&
+             isValidEmail(data.email) &&
+             data.role in ['admin', 'user'] &&
+             (!('createdAt' in data) || data.createdAt is timestamp);
+    }
+    
+    function isValidSettings(data) {
+      return hasOnlyAllowedFields(['name', 'role', 'description', 'heroText', 'heroImage', 'aboutText', 'experience', 'specialties', 'tools', 'whatsapp', 'email', 'instagram', 'logoUrl']) &&
+             (!('name' in data) || isValidString('name', 100)) &&
+             (!('role' in data) || isValidString('role', 100)) &&
+             (!('description' in data) || isValidString('description', 500)) &&
+             (!('heroText' in data) || isValidString('heroText', 500)) &&
+             (!('heroImage' in data) || isValidString('heroImage', 2000)) &&
+             (!('aboutText' in data) || isValidString('aboutText', 5000)) &&
+             (!('experience' in data) || isValidString('experience', 2000)) &&
+             (!('specialties' in data) || isValidString('specialties', 2000)) &&
+             (!('tools' in data) || isValidString('tools', 2000)) &&
+             (!('whatsapp' in data) || isValidString('whatsapp', 50)) &&
+             (!('email' in data) || isValidString('email', 100)) &&
+             (!('instagram' in data) || isValidString('instagram', 100)) &&
+             (!('logoUrl' in data) || isValidString('logoUrl', 2000));
+    }
+    
+    function isValidProject(data) {
+      return hasOnlyAllowedFields(['title', 'category', 'description', 'imageUrl', 'createdAt']) &&
+             hasRequiredFields(['title', 'category', 'imageUrl', 'createdAt']) &&
+             isValidRequiredString('title', 200) &&
+             isValidRequiredString('category', 100) &&
+             (!('description' in data) || isValidString('description', 2000)) &&
+             isValidRequiredString('imageUrl', 2000) &&
+             data.createdAt is timestamp;
+    }
+    
+    function isValidCategory(data) {
+      return hasOnlyAllowedFields(['name']) &&
+             hasRequiredFields(['name']) &&
+             isValidRequiredString('name', 100);
+    }
+    
+    function isValidTestimonial(data) {
+      return hasOnlyAllowedFields(['clientName', 'clientPhoto', 'rating', 'comment', 'createdAt']) &&
+             hasRequiredFields(['clientName', 'rating', 'comment', 'createdAt']) &&
+             isValidRequiredString('clientName', 100) &&
+             (!('clientPhoto' in data) || isValidString('clientPhoto', 2000)) &&
+             data.rating is number && data.rating >= 1 && data.rating <= 5 &&
+             isValidRequiredString('comment', 2000) &&
+             data.createdAt is timestamp;
+    }
+    
+    function isValidMessage(data) {
+      return hasOnlyAllowedFields(['name', 'email', 'message', 'createdAt']) &&
+             hasRequiredFields(['name', 'email', 'message', 'createdAt']) &&
+             isValidRequiredString('name', 100) &&
+             isValidEmail(data.email) &&
+             isValidRequiredString('message', 5000) &&
+             data.createdAt is timestamp;
+    }
+    
+    // ===============================================================
+    // Rules
+    // ===============================================================
+    
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isAuthenticated() && isValidUser(request.resource.data) && 
+                    (isAdmin() || (isOwner(userId) && request.resource.data.role == 'user'));
+      allow update: if isAuthenticated() && isValidUser(request.resource.data) && 
+                    (isAdmin() || (isOwner(userId) && request.resource.data.role == resource.data.role));
+      allow delete: if isAdmin();
+    }
+    
+    match /settings/{settingId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin() && isValidSettings(request.resource.data);
+    }
+    
+    match /projects/{projectId} {
+      allow read: if true;
+      allow create, update: if isAdmin() && isValidProject(request.resource.data);
+      allow delete: if isAdmin();
+    }
+    
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow create, update: if isAdmin() && isValidCategory(request.resource.data);
+      allow delete: if isAdmin();
+    }
+    
+    match /testimonials/{testimonialId} {
+      allow read: if true;
+      allow create, update: if isAdmin() && isValidTestimonial(request.resource.data);
+      allow delete: if isAdmin();
+    }
+    
+    match /messages/{messageId} {
+      allow read: if isAdmin();
+      allow create: if isValidMessage(request.resource.data);
+      allow update: if isAdmin() && isValidMessage(request.resource.data);
+      allow delete: if isAdmin();
+    }
+  }
+}
