@@ -1,29 +1,40 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Mail, MessageCircle, PenTool, MonitorSmartphone, FileText, Share2, Utensils, Plus } from 'lucide-react';
-import { doc, getDoc } from 'firebase/firestore';
+import { ArrowRight, Mail, MessageCircle, PenTool, MonitorSmartphone, FileText, Share2, Utensils, Plus, Star } from 'lucide-react';
+import { doc, getDoc, collection, getDocs, query, orderBy, limit } from 'firebase/firestore';
 import { db } from '../firebase';
 
 export const Home = () => {
   const [settings, setSettings] = useState<any>(null);
+  const [testimonials, setTestimonials] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
-    const fetchSettings = async () => {
+    const fetchData = async () => {
       try {
+        // Fetch Settings
         const docSnap = await getDoc(doc(db, 'settings', 'global'));
         if (docSnap.exists()) {
           setSettings(docSnap.data());
         }
+
+        // Fetch Testimonials
+        const q = query(collection(db, 'testimonials'), orderBy('createdAt', 'desc'), limit(6));
+        const querySnapshot = await getDocs(q);
+        const fetchedTestimonials = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setTestimonials(fetchedTestimonials);
       } catch (error) {
-        console.error("Error fetching settings:", error);
+        console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
       }
     };
-    fetchSettings();
+    fetchData();
   }, []);
 
   const defaultImage = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop';
@@ -208,6 +219,62 @@ export const Home = () => {
           })}
         </div>
       </motion.div>
+
+      {/* Testimonials Section */}
+      {testimonials.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="pt-12 border-t border-white/10"
+        >
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">O QUE DIZEM SOBRE MIM:</h2>
+            <div className="w-24 h-1 bg-emerald-500 mx-auto rounded-full"></div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {testimonials.map((testimonial, index) => (
+              <motion.div
+                key={testimonial.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="bg-zinc-900/50 border border-white/5 p-8 rounded-2xl hover:bg-zinc-900 transition-colors flex flex-col"
+              >
+                <div className="flex items-center gap-4 mb-6">
+                  {testimonial.clientPhoto ? (
+                    <img 
+                      src={testimonial.clientPhoto} 
+                      alt={testimonial.clientName} 
+                      className="w-14 h-14 rounded-full object-cover" 
+                      referrerPolicy="no-referrer" 
+                    />
+                  ) : (
+                    <div className="w-14 h-14 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold text-xl">
+                      {testimonial.clientName.charAt(0)}
+                    </div>
+                  )}
+                  <div>
+                    <h3 className="text-lg font-bold text-white">{testimonial.clientName}</h3>
+                    <div className="flex gap-1 mt-1">
+                      {[...Array(5)].map((_, i) => (
+                        <Star 
+                          key={i} 
+                          className={`w-4 h-4 ${i < testimonial.rating ? 'text-yellow-400 fill-yellow-400' : 'text-zinc-600'}`} 
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <p className="text-zinc-400 italic flex-1">"{testimonial.comment}"</p>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      )}
     </motion.div>
   );
 };
