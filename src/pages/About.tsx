@@ -4,10 +4,13 @@ import { doc, getDoc, collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Star, CheckCircle2, Code2, PenTool, LayoutTemplate } from 'lucide-react';
 
+import { Lightbox } from '../components/Lightbox';
+
 export const About = () => {
   const [settings, setSettings] = useState<any>(null);
   const [testimonials, setTestimonials] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -132,7 +135,13 @@ export const About = () => {
                 <p className="text-lg text-zinc-300 italic mb-8">"{testimonial.comment}"</p>
                 <div className="flex items-center gap-4">
                   {testimonial.clientPhoto ? (
-                    <img src={testimonial.clientPhoto} alt={testimonial.clientName} className="w-12 h-12 rounded-full object-cover" referrerPolicy="no-referrer" />
+                    <img 
+                      src={testimonial.clientPhoto} 
+                      alt={testimonial.clientName} 
+                      className="w-12 h-12 rounded-full object-cover cursor-pointer hover:opacity-80 transition-opacity" 
+                      referrerPolicy="no-referrer" 
+                      onClick={() => setSelectedImage(testimonial.clientPhoto)}
+                    />
                   ) : (
                     <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center text-xl font-bold text-zinc-500">
                       {testimonial.clientName.charAt(0)}
@@ -148,6 +157,8 @@ export const About = () => {
           </div>
         </div>
       )}
+
+      <Lightbox imageUrl={selectedImage} onClose={() => setSelectedImage(null)} />
     </motion.div>
   );
 };

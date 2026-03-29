@@ -4,6 +4,8 @@ import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Maximize2, X } from 'lucide-react';
 
+import { Lightbox } from '../components/Lightbox';
+
 interface Project {
   id: string;
   title: string;
@@ -122,31 +124,7 @@ export const Portfolio = () => {
       </motion.div>
 
       {/* Lightbox */}
-      <AnimatePresence>
-        {selectedImage && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center p-4"
-            onClick={() => setSelectedImage(null)}
-          >
-            <button 
-              className="absolute top-6 right-6 p-2 text-white/50 hover:text-white transition-colors"
-              onClick={() => setSelectedImage(null)}
-            >
-              <X className="w-8 h-8" />
-            </button>
-            <img 
-              src={selectedImage} 
-              alt="Preview" 
-              className="max-w-full max-h-[90vh] object-contain rounded-lg"
-              referrerPolicy="no-referrer"
-              onClick={(e) => e.stopPropagation()}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <Lightbox imageUrl={selectedImage} onClose={() => setSelectedImage(null)} />
     </motion.div>
   );
 };

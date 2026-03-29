@@ -5,11 +5,14 @@ import { ArrowRight, Mail, MessageCircle, PenTool, MonitorSmartphone, FileText, 
 import { doc, getDoc, collection, getDocs, query, orderBy, limit } from 'firebase/firestore';
 import { db } from '../firebase';
 
+import { Lightbox } from '../components/Lightbox';
+
 export const Home = () => {
   const [settings, setSettings] = useState<any>(null);
   const [testimonials, setTestimonials] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -155,8 +158,9 @@ export const Home = () => {
                 transition={{ duration: 0.8 }}
                 src={heroImages[currentImageIndex]} 
                 alt={name} 
-                className="absolute inset-0 w-full h-full object-cover"
+                className="absolute inset-0 w-full h-full object-cover cursor-pointer"
                 referrerPolicy="no-referrer"
+                onClick={() => setSelectedImage(heroImages[currentImageIndex])}
               />
             </AnimatePresence>
 
@@ -249,8 +253,9 @@ export const Home = () => {
                     <img 
                       src={testimonial.clientPhoto} 
                       alt={testimonial.clientName} 
-                      className="w-14 h-14 rounded-full object-cover" 
+                      className="w-14 h-14 rounded-full object-cover cursor-pointer hover:opacity-80 transition-opacity" 
                       referrerPolicy="no-referrer" 
+                      onClick={() => setSelectedImage(testimonial.clientPhoto)}
                     />
                   ) : (
                     <div className="w-14 h-14 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold text-xl">
@@ -275,6 +280,8 @@ export const Home = () => {
           </div>
         </motion.div>
       )}
+
+      <Lightbox imageUrl={selectedImage} onClose={() => setSelectedImage(null)} />
     </motion.div>
   );
 };
