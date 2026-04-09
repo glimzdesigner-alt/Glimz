@@ -1,10 +1,19 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
-import firebaseConfig from '../firebase-applet-config.json';
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyD4mNtT2mUuhpY8G0sIfUwkHRWXkntTZAE",
+  authDomain: "glimzcombr.firebaseapp.com",
+  projectId: "glimzcombr",
+  storageBucket: "glimzcombr.firebasestorage.app",
+  messagingSenderId: "344498968945",
+  appId: "1:344498968945:web:c228f2fce62d3ba549bed0"
+};
 
 const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
+export const db = getFirestore(app);
 export const auth = getAuth(app);
 
 export const signInWithEmail = async (email: string, password: string) => {
