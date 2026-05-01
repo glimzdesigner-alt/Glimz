@@ -70,7 +70,8 @@ export const Portfolio = () => {
       {/* Filters */}
       <div className="flex flex-wrap items-center justify-center gap-3 mb-12">
         {categories.map((category) => (
-          <button
+          <motion.button
+            whileTap={{ scale: 0.95 }}
             key={category}
             onClick={() => setActiveCategory(category)}
             className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${
@@ -80,20 +81,21 @@ export const Portfolio = () => {
             }`}
           >
             {category}
-          </button>
+          </motion.button>
         ))}
       </div>
 
       {/* Grid */}
       <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         <AnimatePresence>
-          {filteredProjects.map((project) => (
+          {filteredProjects.map((project, index) => (
             <motion.div
               layout
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.3 }}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ duration: 0.4, delay: index * 0.05 }}
               key={project.id}
               className="group relative rounded-3xl overflow-hidden bg-zinc-900 border border-white/10"
             >

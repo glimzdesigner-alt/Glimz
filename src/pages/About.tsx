@@ -80,23 +80,41 @@ export const About = () => {
 
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-4">
-            <div className="aspect-square rounded-3xl bg-zinc-900 border border-white/10 p-8 flex flex-col items-center justify-center text-center hover:bg-zinc-800 transition-colors">
+            <motion.div 
+              whileTap={{ scale: 0.95 }}
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="aspect-square rounded-3xl bg-zinc-900 border border-white/10 p-8 flex flex-col items-center justify-center text-center hover:bg-zinc-800 transition-colors"
+            >
               <PenTool className="w-12 h-12 text-emerald-400 mb-4" />
               <h3 className="font-bold text-lg mb-2">UI/UX Design</h3>
               <p className="text-sm text-zinc-500">Interfaces focadas no usuário</p>
-            </div>
-            <div className="aspect-[4/5] rounded-3xl bg-zinc-900 border border-white/10 p-8 flex flex-col items-center justify-center text-center hover:bg-zinc-800 transition-colors">
+            </motion.div>
+            <motion.div 
+              whileTap={{ scale: 0.95 }}
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="aspect-[4/5] rounded-3xl bg-zinc-900 border border-white/10 p-8 flex flex-col items-center justify-center text-center hover:bg-zinc-800 transition-colors"
+            >
               <LayoutTemplate className="w-12 h-12 text-blue-400 mb-4" />
               <h3 className="font-bold text-lg mb-2">Web Design</h3>
               <p className="text-sm text-zinc-500">Sites modernos e responsivos</p>
-            </div>
+            </motion.div>
           </div>
           <div className="space-y-4 pt-12">
-            <div className="aspect-[4/5] rounded-3xl bg-zinc-900 border border-white/10 p-8 flex flex-col items-center justify-center text-center hover:bg-zinc-800 transition-colors">
+            <motion.div 
+              whileTap={{ scale: 0.95 }}
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="aspect-[4/5] rounded-3xl bg-zinc-900 border border-white/10 p-8 flex flex-col items-center justify-center text-center hover:bg-zinc-800 transition-colors"
+            >
               <Code2 className="w-12 h-12 text-purple-400 mb-4" />
               <h3 className="font-bold text-lg mb-2">Prototipagem</h3>
               <p className="text-sm text-zinc-500">Interações de alta fidelidade</p>
-            </div>
+            </motion.div>
           </div>
         </div>
       </div>
@@ -106,12 +124,17 @@ export const About = () => {
         <h2 className="text-3xl font-bold tracking-tighter mb-12">Ferramentas que domino</h2>
         <div className="flex flex-wrap justify-center gap-4 max-w-4xl mx-auto">
           {tools.map((tool: string, index: number) => (
-            <div 
+            <motion.div 
               key={index}
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.05 }}
+              whileTap={{ scale: 0.9 }}
               className="px-6 py-3 bg-zinc-900 border border-white/10 rounded-full text-zinc-300 font-medium hover:bg-white hover:text-black transition-colors cursor-default"
             >
               {tool}
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>

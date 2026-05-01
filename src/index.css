@@ -6,11 +6,5 @@
 }
 
 @layer base {
-  html, body {
-    cursor: none;
-  }
-  
-  a, button, [role="button"], .cursor-pointer {
-    cursor: none !important;
-  }
+  /* No global cursor hiding here, applied per layout */
 }
