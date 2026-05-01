@@ -25,7 +25,7 @@ export const Navbar = () => {
   const toggleMenu = () => setIsOpen(!isOpen);
 
   return (
-    <nav className="fixed w-full z-50 bg-black/80 backdrop-blur-md border-b border-white/10">
+    <nav className="fixed w-full z-50 bg-zinc-950 md:bg-black/80 md:backdrop-blur-md border-b border-white/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           <div className="flex-shrink-0">
@@ -73,7 +73,7 @@ export const Navbar = () => {
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed inset-y-0 right-0 w-full max-w-xs bg-zinc-950 border-l border-white/10 z-[60] md:hidden p-8 shadow-2xl"
+            className="fixed inset-y-0 right-0 w-full max-w-xs bg-black border-l border-white/10 z-[60] md:hidden p-8 shadow-2xl"
           >
             <div className="flex justify-end mb-8">
               <button 
@@ -117,7 +117,7 @@ export const Navbar = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={toggleMenu}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[55] md:hidden"
+            className="fixed inset-0 bg-black/80 z-[55] md:hidden"
           />
         )}
       </AnimatePresence>
