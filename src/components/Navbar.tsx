@@ -69,28 +69,56 @@ export const Navbar = () => {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-black border-b border-white/10"
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className="fixed inset-y-0 right-0 w-full max-w-xs bg-zinc-950 border-l border-white/10 z-[60] md:hidden p-8 shadow-2xl"
           >
-            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-              {links.map((link) => (
-                <Link
+            <div className="flex justify-end mb-8">
+              <button 
+                onClick={toggleMenu}
+                className="p-2 text-zinc-400 hover:text-white"
+              >
+                <X className="h-8 w-8" />
+              </button>
+            </div>
+            <div className="flex flex-col space-y-6">
+              {links.map((link, index) => (
+                <motion.div
                   key={link.name}
-                  to={link.path}
-                  onClick={() => setIsOpen(false)}
-                  className={`block px-3 py-2 rounded-md text-base font-medium ${
-                    location.pathname === link.path
-                      ? 'text-emerald-400 bg-gray-900'
-                      : 'text-gray-300 hover:text-white hover:bg-gray-800'
-                  }`}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.1 + index * 0.1 }}
                 >
-                  {link.name}
-                </Link>
+                  <Link
+                    to={link.path}
+                    onClick={() => setIsOpen(false)}
+                    className={`text-3xl font-bold ${
+                      location.pathname === link.path
+                        ? 'text-emerald-400'
+                        : 'text-zinc-500 hover:text-white'
+                    }`}
+                  >
+                    {link.name}
+                  </Link>
+                </motion.div>
               ))}
             </div>
           </motion.div>
+        )}
+      </AnimatePresence>
+      
+      {/* Overlay for mobile menu */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={toggleMenu}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[55] md:hidden"
+          />
         )}
       </AnimatePresence>
     </nav>

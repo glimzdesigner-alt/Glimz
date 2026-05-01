@@ -110,20 +110,24 @@ export const Home = () => {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 pt-4">
-            <Link 
-              to="/portfolio"
-              className="inline-flex items-center justify-center gap-2 bg-white text-black px-8 py-4 rounded-full font-semibold hover:bg-zinc-200 transition-colors group"
-            >
-              Ver Portfólio
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Link>
-            <Link 
-              to="/contact"
-              className="inline-flex items-center justify-center gap-2 bg-zinc-900 border border-white/10 text-white px-8 py-4 rounded-full font-semibold hover:bg-zinc-800 transition-colors"
-            >
-              <MessageCircle className="w-5 h-5" />
-              Entrar em Contato
-            </Link>
+            <motion.div whileTap={{ scale: 0.95 }} className="flex-1 sm:flex-none">
+              <Link 
+                to="/portfolio"
+                className="w-full inline-flex items-center justify-center gap-2 bg-white text-black px-8 py-4 rounded-full font-semibold hover:bg-zinc-200 transition-colors group"
+              >
+                Ver Portfólio
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </motion.div>
+            <motion.div whileTap={{ scale: 0.95 }} className="flex-1 sm:flex-none">
+              <Link 
+                to="/contact"
+                className="w-full inline-flex items-center justify-center gap-2 bg-zinc-900 border border-white/10 text-white px-8 py-4 rounded-full font-semibold hover:bg-zinc-800 transition-colors"
+              >
+                <MessageCircle className="w-5 h-5" />
+                Entrar em Contato
+              </Link>
+            </motion.div>
           </div>
 
           <div className="pt-8 border-t border-white/10 flex items-center gap-6">
@@ -244,7 +248,8 @@ export const Home = () => {
                 key={testimonial.id}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
+                viewport={{ once: true, margin: "-50px" }}
+                whileTap={{ scale: 0.98 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 className="bg-zinc-900/50 border border-white/5 p-8 rounded-2xl hover:bg-zinc-900 transition-colors flex flex-col"
               >
