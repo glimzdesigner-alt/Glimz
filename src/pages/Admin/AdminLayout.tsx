@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FolderKanban, MessageSquare, Settings as SettingsIcon, LogOut, Star, Menu, X, Home, Users } from 'lucide-react';
+import { LayoutDashboard, FolderKanban, MessageSquare, Settings as SettingsIcon, LogOut, Star, Menu, X, Home, Users, Tag } from 'lucide-react';
 import { logOut } from '../../firebase';
 
 export const AdminLayout = () => {
@@ -12,6 +12,7 @@ export const AdminLayout = () => {
     { name: 'Projetos', path: '/admin/projects', icon: FolderKanban },
     { name: 'Depoimentos', path: '/admin/testimonials', icon: Star },
     { name: 'Leads', path: '/admin/leads', icon: Users },
+    { name: 'Categorias', path: '/admin/categories', icon: Tag },
     { name: 'Configurações', path: '/admin/settings', icon: SettingsIcon },
   ];
 

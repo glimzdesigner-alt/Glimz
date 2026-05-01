@@ -17,6 +17,7 @@ import { Dashboard } from './pages/Admin/Dashboard';
 import { ManageProjects } from './pages/Admin/ManageProjects';
 import { ManageTestimonials } from './pages/Admin/ManageTestimonials';
 import { ManageLeads } from './pages/Admin/ManageLeads';
+import { ManageCategories } from './pages/Admin/ManageCategories';
 import { Settings } from './pages/Admin/Settings';
 
 export default function App() {
@@ -41,6 +42,7 @@ export default function App() {
               <Route path="projects" element={<ManageProjects />} />
               <Route path="testimonials" element={<ManageTestimonials />} />
               <Route path="leads" element={<ManageLeads />} />
+              <Route path="categories" element={<ManageCategories />} />
               <Route path="settings" element={<Settings />} />
             </Route>
           </Route>

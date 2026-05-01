@@ -14,6 +14,7 @@ interface Project {
 
 export const ManageProjects = () => {
   const [projects, setProjects] = useState<Project[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   
@@ -25,11 +26,20 @@ export const ManageProjects = () => {
   });
 
   useEffect(() => {
-    const unsub = onSnapshot(collection(db, 'projects'), (snapshot) => {
+    const unsubProjects = onSnapshot(collection(db, 'projects'), (snapshot) => {
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Project));
       setProjects(data);
     });
-    return () => unsub();
+
+    const unsubCategories = onSnapshot(collection(db, 'categories'), (snapshot) => {
+      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setCategories(data);
+    });
+
+    return () => {
+      unsubProjects();
+      unsubCategories();
+    };
   }, []);
 
   const handleOpenModal = (project?: Project) => {
@@ -144,14 +154,23 @@ export const ManageProjects = () => {
               
               <div>
                 <label className="block text-sm font-medium text-zinc-400 mb-1">Categoria</label>
-                <input
-                  type="text"
+                <select
                   required
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  className="w-full bg-zinc-950 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-emerald-500"
-                  placeholder="Ex: Logo, Social Media, Web Design"
-                />
+                  className="w-full bg-zinc-950 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-emerald-500 appearance-none cursor-pointer"
+                >
+                  <option value="" disabled>Selecione uma categoria</option>
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.name}>
+                      {cat.name}
+                    </option>
+                  ))}
+                  {categories.length === 0 && (
+                    <option value="" disabled>Nenhuma categoria encontrada. Crie uma primeiro.</option>
+                  )}
+                </select>
+                <p className="mt-1 text-[10px] text-zinc-500">Gerencie categorias no menu "Categorias"</p>
               </div>
 
               <div>
